@@ -102,8 +102,7 @@ public class VuforiaSkyStoneNavigationWebcam extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            "Aec6FbX/////AAAAGYyvxOfwvkZVrvh3KVOlJt4mc58zR874K20usp1ry39aZBbz/Uw0af6M2tf9EW+axj373SVnLDsSGzlsKJdzD4u5jjejTR7g7ld1vmbm+2d6U6Ke+gclUybAceVaG6R9mDNrLC70MgBb03wAOk2xEKgOSYYRuXFNQg5kFtBtxv41CdEGYmIewkLS3HSzhl+jb/liXo6GR+3rg82IWbmEROXLClI1DPJDstlNuHKACWaMqKxq5fDEJJDvNCqYZzhZvpWmEn8Vu1ASP81rBpbtwcM3oY2d+m0hxpkOHfkxKOWIpTsJHsUkIvz7T39/7bQm9ZQHwWK1Wsh3v7fhZyIOejOKsYheogpSJFKjK0ds5LH6";
-
+            "AQvZgMD/////AAABmZquHHM/akuGkmTcIcssi+gINVzua6tbuI6iq9wY3ypvUkndXoRQncprZtLgjoNzaAZx4jTucekE90oZj0G/CqgXL1uzhrV4+knSziKUwgFVy3SVvGzw0+/ZqHVFwAFe6wsty2B2Mxg+uIoAFq7tB5WRB6GMx1j47m9q7+hkx3+KOKasSiO/T8Fd/nehQkRVBwB1XJNEo28R0yicJfdGkhxgJOK/CGTkN49MooMjaSx1PFpgx2Bx8wxJwNMcOxzh3zYeiwddMZvsycSf3h2WTDHBHeFkW+f00i0071LJRaawELtRmIxP/pmV2Squ/1daGYjLGKveSPH5tBIHiQvGwdAnv3QrRZnhEf6ztG9eELEs";
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
     private static final float mmPerInch        = 25.4f;
