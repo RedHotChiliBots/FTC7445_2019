@@ -27,12 +27,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpMode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.teamcode.Library.Library;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -49,59 +54,86 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop Tank", group="Teleop")
+@TeleOp(name="Teleop Tank Linear", group="Teleop")
 //@Disabled
-public class TeleopTank_Iterative extends OpMode{
+public class TeleopTank_Linear extends LinearOpMode {
 
     /* Declare OpMode members. */
-    Hardware robot       = new Hardware(); // use the class created to define a Pushbot's hardware
-    double          clawOffset  = 0.0 ;                  // Servo mid position
-    final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
+    Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
+    VuforiaSkyStoneWebcam vu = new VuforiaSkyStoneWebcam();
+    Library lib = new Library();
+
+    public void runOpMode() {
+        initOpmode();
+        waitForStart();
+        startOpmode();
+        while (opModeIsActive())
+        {
+            loopOpmode();
+            telemetry.update();
+        }
+        stopOpMode();
+    }
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
-    @Override
-    public void init() {
+    public void initOpmode() {
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        telemetry.addData("Hardware", "Init");
+
+        vu.init(robot.parameters);
+        vu.targetsSkyStone.activate();
+        telemetry.addData("Vuforia", "Init");
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Say", "Hello Driver");
+
+        telemetry.update();
     }
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
-    @Override
-    public void init_loop() {
-    }
+//    @Override
+//    public void init_loop() {
+//     }
 
     /*
      * Code to run ONCE when the driver hits PLAY
      */
-    @Override
-    public void start() {
+    public void startOpmode() {
+
     }
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
-    @Override
-    public void loop() {
-        double left;
-        double right;
+    public void loopOpmode() {
+        List<Double> speed = Arrays.asList(0.0, 0.0);
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
+//        left = -gamepad1.left_stick_y;
+//        right = -gamepad1.right_stick_y;
 
-        robot.leftFrontDrive.setPower(left);
-        robot.rightFrontDrive.setPower(right);
-        robot.leftRearDrive.setPower(left);
-        robot.rightRearDrive.setPower(right);
+        trackTarget(vu.stoneTarget);
+
+        if (vu.getPosLOS() > 12.0) {
+            speed.add(0,0.5);
+            speed.add(1,0.5);
+
+            // calculate course adjustment if
+            // we are off coarse by 2 inches or 2 degrees
+            speed = lib.calcCorrection(vu.getPosOffset(), vu.getPosAngle(), vu.getYaw());
+        }
+
+//        robot.leftFrontDrive.setPower((double)speed.get(0));
+//        robot.rightFrontDrive.setPower((double)speed.get(1));
+//        robot.leftRearDrive.setPower((double)speed.get(0));
+//        robot.rightRearDrive.setPower((double)speed.get(1));
 
         // Use gamepad left & right Bumpers to open and close the claw
 //        if (gamepad1.right_bumper)
@@ -124,14 +156,36 @@ public class TeleopTank_Iterative extends OpMode{
 
         // Send telemetry message to signify robot running;
 //        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
+        telemetry.addData("Speed",  "{left, right} = %.2f %.2f", (double)speed.get(0), (double)speed.get(2));
+        telemetry.update();
     }
 
     /*
      * Code to run ONCE after the driver hits STOP
      */
-    @Override
-    public void stop() {
+    public void stopOpMode() {
+        // Disable Tracking when we are done;
+        vu.targetsSkyStone.deactivate();
+    }
+
+    private void trackTarget(VuforiaTrackable target) {
+
+        if (((VuforiaTrackableDefaultListener)target.getListener()).isVisible()) {
+            vu.setVisible(true);
+
+            // getUpdatedRobotLocation() will return null if no new information is available since
+            // the last time that call was made, or if the trackable is not currently visible.
+            vu.setTransform(((VuforiaTrackableDefaultListener)target.getListener()).getUpdatedRobotLocation());
+
+            telemetry.addData("Visible Target", target.getName());
+            telemetry.addData("Pos (in)", "{Dist, Offset, Height} = %.1f, %.1f, %.1f", vu.getPosDist(), vu.getPosOffset(), vu.getPosHeight());
+            telemetry.addData("Pos (in)", "{LOS, Angle} = %.1f, %.1f", vu.getPosLOS(), vu.getPosAngle());
+            telemetry.addData("Rot (deg)", "{Roll, Pitch, Yaw} = %.0f, %.0f, %.0f", vu.getRoll(), vu.getPitch(), vu.getYaw());
+
+        } else {
+            vu.setVisible(false);
+            vu.setTransform(null);
+            telemetry.addData("Visible Target", "none");
+        }
     }
 }
