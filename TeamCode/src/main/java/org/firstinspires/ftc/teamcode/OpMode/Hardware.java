@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -74,10 +75,17 @@ public class Hardware {
 
 
     /* Public OpMode members. */
-    public DcMotor  leftFrontDrive   = null;
-    public DcMotor  rightFrontDrive  = null;
-    public DcMotor  leftRearDrive    = null;
-    public DcMotor  rightRearDrive   = null;
+    public DcMotor leftFrontDrive   = null;
+    public DcMotor rightFrontDrive  = null;
+    public DcMotor leftRearDrive    = null;
+    public DcMotor rightRearDrive   = null;
+
+    public Servo cameraServo        = null;
+
+    public final double MID_POS    = 0.0;
+    public final double MAX_LEFT   = 1.0;
+    public final double MAX_RIGHT  = -1.0;
+    public final double DEGREE_POS = (MAX_LEFT-MAX_RIGHT)/180.0;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -124,14 +132,13 @@ public class Hardware {
          */
         parameters.cameraName = webcamName;
 
-
         /***********************************************************/
         /*********** Define and Initialize Drive Motors ************/
         /***********************************************************/
         // Define each drive motor
-        leftFrontDrive  = hwMap.get(DcMotor.class, "leftFrontDrive");
+        leftFrontDrive = hwMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
-        leftRearDrive  = hwMap.get(DcMotor.class, "leftRearDrive");
+        leftRearDrive = hwMap.get(DcMotor.class, "leftRearDrive");
         rightRearDrive = hwMap.get(DcMotor.class, "rightRearDrive");
 
         // Initialize drive motors to correct rotation
@@ -153,8 +160,13 @@ public class Hardware {
         leftRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        /***********************************************************/
+        /************** Define and Initialize Servos ***************/
+        /***********************************************************/
 
+        cameraServo = hwMap.get(Servo.class, "Camera Servo");
 
+        cameraServo.setPosition(MID_POS);
 
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
 //        leftArm.setPower(0);
@@ -169,7 +181,6 @@ public class Hardware {
 
 //        double          clawOffset  = 0.0 ;                  // Servo mid position
 //        final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
-
     }
  }
 

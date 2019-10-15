@@ -133,6 +133,7 @@ public class VuforiaSkyStoneWebcam {
     public List<VuforiaTrackable> allTrackables = null;
 
     public VuforiaTrackables targetsSkyStone = null;
+
     public VuforiaTrackable stoneTarget = null;
     public VuforiaTrackable blueRearBridge = null;
     public VuforiaTrackable redRearBridge = null;
@@ -306,8 +307,10 @@ public class VuforiaSkyStoneWebcam {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+//        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+//        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_FORWARD_DISPLACEMENT  = 0.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 5.5f * mmPerInch;   // eg: Camera is 8 Inches above ground
         final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
@@ -330,23 +333,26 @@ public class VuforiaSkyStoneWebcam {
             translation = lastLocation.getTranslation();
 
             if (translation != null) {
-                posDist = translation.get(0) / mmPerInch;
+                posDist   = translation.get(0) / mmPerInch;
                 posOffset = translation.get(1) / mmPerInch;
                 posHeight = translation.get(2) / mmPerInch;
-                posLOS = Math.sqrt((Math.pow(posDist, 2)) + (Math.pow(posOffset, 2)));
-                posAngle = Math.toDegrees(Math.sin(posDist / posLOS));
+
+                posLOS    = Math.sqrt((Math.pow(posDist, 2)) + (Math.pow(posOffset, 2)));
+                posAngle  = Math.toDegrees(Math.sin(posOffset / posLOS));
 
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                roll = rotation.firstAngle;
+//                Orientation rotation = Orientation.getOrientation(lastLocation, INTRINSIC, XYZ, DEGREES);
+                roll  = rotation.firstAngle;
                 pitch = rotation.secondAngle;
-                yaw = rotation.thirdAngle;
+                yaw   = rotation.thirdAngle;
             }
         }
     }
 
-//    public VectorF getTranslation() {
-//        return this.translation;
-//    }
+
+    public VectorF getTranslation() {
+        return this.translation;
+    }
 
     public double getPosDist() {
         return this.posDist;
