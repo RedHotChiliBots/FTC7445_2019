@@ -122,9 +122,6 @@ public class TeleopTank_Linear extends LinearOpMode {
         trackTarget(vu.stoneTarget);
 
         if (vu.getPosLOS() > 12.0) {
-            speed.add(0,0.5);
-            speed.add(1,0.5);
-
             // calculate course adjustment if
             // we are off coarse by 2 inches or 2 degrees
             speed = lib.calcCorrection(vu.getPosOffset(), vu.getPosAngle(), vu.getYaw());
@@ -156,7 +153,7 @@ public class TeleopTank_Linear extends LinearOpMode {
 
         // Send telemetry message to signify robot running;
 //        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("Speed",  "{left, right} = %.2f %.2f", (double)speed.get(0), (double)speed.get(2));
+        telemetry.addData("Speed",  "{left, right} = %4.2f %4.2f", (double)speed.get(0), (double)speed.get(1));
         telemetry.update();
     }
 
@@ -179,7 +176,7 @@ public class TeleopTank_Linear extends LinearOpMode {
 
             telemetry.addData("Visible Target", target.getName());
             telemetry.addData("Pos (in)", "{Dist, Offset, Height} = %.1f, %.1f, %.1f", vu.getPosDist(), vu.getPosOffset(), vu.getPosHeight());
-            telemetry.addData("Pos (in)", "{LOS, Angle} = %.1f, %.1f", vu.getPosLOS(), vu.getPosAngle());
+            telemetry.addData("Pos (in,deg)", "{LOS, Angle} = %.1f, %.1f", vu.getPosLOS(), vu.getPosAngle());
             telemetry.addData("Rot (deg)", "{Roll, Pitch, Yaw} = %.0f, %.0f, %.0f", vu.getRoll(), vu.getPitch(), vu.getYaw());
 
         } else {
