@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleopTank_Iterative extends OpMode {
 
     /* Declare OpMode members. */
-    Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
+    HardwareNoCamera robot           = new HardwareNoCamera(); // use the class created to define a Pushbot's hardware
 
 
     public void TelopTank_Iterative() {
