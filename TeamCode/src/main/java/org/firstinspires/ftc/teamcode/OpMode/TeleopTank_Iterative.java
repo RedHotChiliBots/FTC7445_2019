@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleopTank_Iterative extends OpMode {
 
     /* Declare OpMode members. */
-    HardwareNoCamera robot           = new HardwareNoCamera(); // use the class created to define a Pushbot's hardware
+    Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
 
 
     public void TelopTank_Iterative() {
@@ -111,10 +111,16 @@ public class TeleopTank_Iterative extends OpMode {
 
 
         // Use gamepad left & right Bumpers to open and close the claw
-//        if (gamepad1.right_bumper)
-//            clawOffset += CLAW_SPEED;
-//        else if (gamepad1.left_bumper)
-//            clawOffset -= CLAW_SPEED;
+        if (gamepad1.right_bumper) {
+            robot.leftServo.setPosition(robot.LEFT_UP);
+            robot.rightServo.setPosition(robot.RIGHT_UP);
+        }
+
+        if (gamepad1.left_bumper) {
+            robot.leftServo.setPosition(robot.LEFT_DN);
+            robot.rightServo.setPosition(robot.RIGHT_DN);
+        }
+
 
         // Move both servos to new position.  Assume servos are mirror image of each other.
 //        clawOffset = Range.clip(clawOffset, -0.5, 0.5);
@@ -131,8 +137,9 @@ public class TeleopTank_Iterative extends OpMode {
 
         // Send telemetry message to signify robot running;
 //        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
+        telemetry.addData("leftDrive",  "%.2f", left);
+        telemetry.addData("rightDrive", "%.2f", right);
+        telemetry.addData("leftServo",  "%.2f", left);
         telemetry.update();
     }
 

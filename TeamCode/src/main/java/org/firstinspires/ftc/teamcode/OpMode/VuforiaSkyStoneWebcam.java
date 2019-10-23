@@ -126,7 +126,7 @@ public class VuforiaSkyStoneWebcam {
      * This is the webcam we are to use. As with other hardware devices such as motors and
      * servos, this device is identified using the robot configuration tool in the FTC application.
      */
-    WebcamName webcamName = null;
+//    WebcamName webcamName = null;
 
     private VectorF translation = null;
 

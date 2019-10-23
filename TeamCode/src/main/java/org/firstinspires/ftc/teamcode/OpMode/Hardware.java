@@ -71,7 +71,7 @@ public class Hardware {
             "AQvZgMD/////AAABmZquHHM/akuGkmTcIcssi+gINVzua6tbuI6iq9wY3ypvUkndXoRQncprZtLgjoNzaAZx4jTucekE90oZj0G/CqgXL1uzhrV4+knSziKUwgFVy3SVvGzw0+/ZqHVFwAFe6wsty2B2Mxg+uIoAFq7tB5WRB6GMx1j47m9q7+hkx3+KOKasSiO/T8Fd/nehQkRVBwB1XJNEo28R0yicJfdGkhxgJOK/CGTkN49MooMjaSx1PFpgx2Bx8wxJwNMcOxzh3zYeiwddMZvsycSf3h2WTDHBHeFkW+f00i0071LJRaawELtRmIxP/pmV2Squ/1daGYjLGKveSPH5tBIHiQvGwdAnv3QrRZnhEf6ztG9eELEs";
 
     public VuforiaLocalizer.Parameters parameters;
-    private WebcamName webcamName = null;
+//    private WebcamName webcamName = null;
 
 
     /* Public OpMode members. */
@@ -80,12 +80,13 @@ public class Hardware {
     public DcMotor leftRearDrive    = null;
     public DcMotor rightRearDrive   = null;
 
-    public Servo cameraServo        = null;
+    public Servo leftServo         = null;
+    public Servo rightServo        = null;
 
-    public final double MID_POS    = 0.0;
-    public final double MAX_LEFT   = 1.0;
-    public final double MAX_RIGHT  = -1.0;
-    public final double DEGREE_POS = (MAX_LEFT-MAX_RIGHT)/180.0;
+    public final double LEFT_UP  = 0.75;
+    public final double LEFT_DN  = 0.0;
+    public final double RIGHT_UP  = 0.0;
+    public final double RIGHT_DN  = 0.75;
 
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
@@ -113,7 +114,7 @@ public class Hardware {
         /*********** Define and Initialize Vuforia & Camera ************/
         /***************************************************************/
 
-        webcamName = ahwMap.get(WebcamName.class, "Webcam 1");
+//        webcamName = ahwMap.get(WebcamName.class, "Webcam 1");
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -130,7 +131,7 @@ public class Hardware {
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = webcamName;
+//        parameters.cameraName = webcamName;
 
         /***********************************************************/
         /*********** Define and Initialize Drive Motors ************/
@@ -164,9 +165,11 @@ public class Hardware {
         /************** Define and Initialize Servos ***************/
         /***********************************************************/
 
-        cameraServo = hwMap.get(Servo.class, "Camera Servo");
+        leftServo  = hwMap.get(Servo.class, "Left Servo");
+        rightServo = hwMap.get(Servo.class, "Right Servo");
 
-        cameraServo.setPosition(MID_POS);
+        leftServo.setPosition(LEFT_UP);
+        rightServo.setPosition(RIGHT_UP);
 
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
 //        leftArm.setPower(0);
