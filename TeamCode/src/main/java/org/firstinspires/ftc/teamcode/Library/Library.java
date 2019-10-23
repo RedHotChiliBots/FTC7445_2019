@@ -54,8 +54,7 @@ public class Library {
             right = clip(right, 1.0, -1.0);
 //        }
 
-        List<Double> result = Arrays.asList(left,right);
-        return result;
+        return Arrays.asList(left,right);
     }
 }
 
