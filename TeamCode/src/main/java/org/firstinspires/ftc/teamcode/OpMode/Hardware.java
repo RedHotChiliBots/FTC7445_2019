@@ -88,13 +88,8 @@ public class Hardware {
     public final double RIGHT_UP  = 0.0;
     public final double RIGHT_DN  = 0.75;
 
-//    public DcMotor  leftArm     = null;
-//    public Servo    leftClaw    = null;
-//    public Servo    rightClaw   = null;
-
-//    public static final double MID_SERVO       =  0.5 ;
-//    public static final double ARM_UP_POWER    =  0.45 ;
-//    public static final double ARM_DOWN_POWER  = -0.45 ;
+    public enum COLOR {RED,BLUE,OTHER}
+    public enum POS {FRONT,BACK,UNKNOWN}
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -171,19 +166,6 @@ public class Hardware {
         leftServo.setPosition(LEFT_UP);
         rightServo.setPosition(RIGHT_UP);
 
-//        leftArm    = hwMap.get(DcMotor.class, "left_arm");
-//        leftArm.setPower(0);
-//        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-        // Define and initialize ALL installed servos.
-//        leftClaw  = hwMap.get(Servo.class, "left_hand");
-//        rightClaw = hwMap.get(Servo.class, "right_hand");
-//        leftClaw.setPosition(MID_SERVO);
-//        rightClaw.setPosition(MID_SERVO);
-
-//        double          clawOffset  = 0.0 ;                  // Servo mid position
-//        final double    CLAW_SPEED  = 0.02 ;                 // sets rate to move servo
     }
  }
 

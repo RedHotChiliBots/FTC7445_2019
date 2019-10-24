@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.teamcode.Library.Library;
@@ -54,14 +56,18 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop Tank Linear", group="Teleop")
+@TeleOp(name="Auton SkyStone", group="Auton")
 //@Disabled
-public class TeleopTank_Linear extends LinearOpMode {
+public class Auton_SkyStone extends LinearOpMode {
 
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
     VuforiaSkyStoneWebcam vu = new VuforiaSkyStoneWebcam();
     Library lib = new Library();
+
+    private Hardware.COLOR      allianceColor = Hardware.COLOR.OTHER;
+    private Hardware.POS        startPosition = Hardware.POS.UNKNOWN;
+
 
     public void runOpMode() {
         initOpmode();
@@ -89,8 +95,14 @@ public class TeleopTank_Linear extends LinearOpMode {
         vu.targetsSkyStone.activate();
         telemetry.addData("Vuforia", "Init");
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");
+        allianceColor = FtcRobotControllerActivity.isRed() ? Hardware.COLOR.RED :
+                (FtcRobotControllerActivity.isBlue() ? Hardware.COLOR.BLUE :
+                        Hardware.COLOR.OTHER);
+        startPosition = FtcRobotControllerActivity.isFront() ? Hardware.POS.FRONT :
+                (FtcRobotControllerActivity.isBack() ? Hardware.POS.BACK :
+                        Hardware.POS.UNKNOWN);
+        telemetry.addData("Alliance", allianceColor);
+        telemetry.addData("Start Pos", startPosition);
 
         telemetry.update();
     }
