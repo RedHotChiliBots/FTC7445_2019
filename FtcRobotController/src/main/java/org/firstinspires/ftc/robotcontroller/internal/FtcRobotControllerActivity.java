@@ -445,7 +445,7 @@ public class FtcRobotControllerActivity extends Activity
 
     public static boolean isRed() { return redAlliance; }
     public static boolean isBlue() { return blueAlliance; }
-    public static boolean isSkyBridge() { return skystoneEnable; }
+    public static boolean isSkyStone() { return skystoneEnable; }
     public static boolean isFoundation() { return foundationEnable; }
     public static boolean isPark() { return parkEnable; }
 
