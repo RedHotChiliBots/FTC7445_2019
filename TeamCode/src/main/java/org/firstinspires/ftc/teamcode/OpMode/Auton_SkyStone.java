@@ -31,9 +31,9 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.teamcode.Library.Library;
@@ -66,8 +66,18 @@ public class Auton_SkyStone extends LinearOpMode {
     Library lib = new Library();
 
     private Hardware.COLOR      allianceColor = Hardware.COLOR.OTHER;
-    private Hardware.POS        startPosition = Hardware.POS.UNKNOWN;
+    private boolean skystone = false;
+    private boolean foundation = false;
+    private boolean park = false;
 
+    private List<Double> speed = Arrays.asList(0.0, 0.0);
+    private VuforiaTrackable rearWallTgt = null;
+    private VuforiaTrackable frontWallTgt = null;
+    private VuforiaTrackable parkWallTgt = null;
+    private double turnSpeed = 0.0;
+
+    private int stateCnt = 0;
+    private ElapsedTime timer = new ElapsedTime();
 
     public void runOpMode() {
         initOpmode();
@@ -98,12 +108,26 @@ public class Auton_SkyStone extends LinearOpMode {
         allianceColor = FtcRobotControllerActivity.isRed() ? Hardware.COLOR.RED :
                 (FtcRobotControllerActivity.isBlue() ? Hardware.COLOR.BLUE :
                         Hardware.COLOR.OTHER);
-        startPosition = FtcRobotControllerActivity.isFront() ? Hardware.POS.FRONT :
-                (FtcRobotControllerActivity.isBack() ? Hardware.POS.BACK :
-                        Hardware.POS.UNKNOWN);
-        telemetry.addData("Alliance", allianceColor);
-        telemetry.addData("Start Pos", startPosition);
+        skystone = FtcRobotControllerActivity.isSkyStone();
+        foundation = FtcRobotControllerActivity.isFoundation();
+        park = FtcRobotControllerActivity.isPark();
 
+        if (allianceColor == Hardware.COLOR.RED) {
+            frontWallTgt = vu.front1;
+            rearWallTgt = vu.rear1;
+            turnSpeed = 0.5;
+
+        } else {
+            frontWallTgt = vu.front2;
+            rearWallTgt = vu.rear2;
+            turnSpeed = -0.5;
+        }
+        parkWallTgt = rearWallTgt;
+
+        telemetry.addData("Alliance", allianceColor);
+        telemetry.addData("SkyStone", skystone);
+        telemetry.addData("Foundation", foundation);
+        telemetry.addData("Park", park);
         telemetry.update();
     }
 
@@ -125,47 +149,94 @@ public class Auton_SkyStone extends LinearOpMode {
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     public void loopOpmode() {
-        List<Double> speed = Arrays.asList(0.0, 0.0);
 
-        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-//        left = -gamepad1.left_stick_y;
-//        right = -gamepad1.right_stick_y;
+        switch (stateCnt) {
+            /**********************************************************/
+            /* Deliver SkyStone if enabled                            */
+            /**********************************************************/
+            case 0: // Initialize
+                stateCnt++;
+                break;
 
-        trackTarget(vu.stoneTarget);
+            case 1: // Drive to Stone Image
+                parkWallTgt = frontWallTgt;
+                trackTarget(vu.stoneTarget, 12.0);
+                if (robot.getTrackState() == Hardware.TRACK.STOPPED) {
+                    stateCnt++;
+                }
+                break;
 
-        if (vu.getPosLOS() > 12.0) {
-            // calculate course adjustment if
-            // we are off coarse by 2 inches or 2 degrees
-            speed = lib.calcCorrection(vu.getPosOffset(), vu.getPosAngle(), vu.getYaw());
+            case 2: // Control SkyStone
+                robot.setFoundation(Hardware.FDTN.DOWN);
+                timer.reset();
+                stateCnt++;
+                break;
+
+            case 3: // Wait 1 sec for Servo to drop
+                if (timer.time() >= 1000) {
+                    stateCnt++;
+                }
+                break;
+
+            case 4: // Turn to Rear Wall Image
+                robot.setDriveSpeed(turnSpeed, -turnSpeed);
+                trackTarget(rearWallTgt, 36.0);
+                if (robot.getTrackState() == Hardware.TRACK.TRACKING) {
+                    stateCnt++;
+                }
+                break;
+
+            case 5: // Track Rear Wall Image
+                trackTarget(rearWallTgt, 36.0);
+                if (robot.getTrackState() == Hardware.TRACK.STOPPED) {
+                    stateCnt++;
+                }
+                break;
+
+            case 6: // Release SkyStone
+                robot.setFoundation(Hardware.FDTN.UP);
+                timer.reset();
+                stateCnt++;
+                break;
+
+            case 7: // Wait 1 sec for Servo to raise
+                if (timer.time() >= 1000) {
+                    stateCnt++;
+                }
+                break;
+
+            /**********************************************************/
+            /* Move Foundation if enabled                             */
+            /**********************************************************/
+
+            /**********************************************************/
+            /* Park if enabled                                        */
+            /**********************************************************/
+            case 8: // Turn to Front Wall Image
+                robot.setDriveSpeed(turnSpeed, -turnSpeed);
+                trackTarget(parkWallTgt, 72.0);
+                if (robot.getTrackState() == Hardware.TRACK.TRACKING) {
+                    stateCnt++;
+                }
+                break;
+
+            case 9: // Track Front Wall Image
+                trackTarget(parkWallTgt, 72.0);
+                if (robot.getTrackState() == Hardware.TRACK.STOPPED) {
+                    stateCnt++;
+                }
+                break;
+
+            case 10:    // Parked
+                stateCnt++;
+                break;
+
+            default:
+                stateCnt++;
         }
 
-//        robot.leftFrontDrive.setPower((double)speed.get(0));
-//        robot.rightFrontDrive.setPower((double)speed.get(1));
-//        robot.leftRearDrive.setPower((double)speed.get(0));
-//        robot.rightRearDrive.setPower((double)speed.get(1));
-
-        // Use gamepad left & right Bumpers to open and close the claw
-//        if (gamepad1.right_bumper)
-//            clawOffset += CLAW_SPEED;
-//        else if (gamepad1.left_bumper)
-//            clawOffset -= CLAW_SPEED;
-
-        // Move both servos to new position.  Assume servos are mirror image of each other.
-//        clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-//      robot.leftClaw.setPosition(robot.MID_SERVO + clawOffset);
-//        robot.rightClaw.setPosition(robot.MID_SERVO - clawOffset);
-
-        // Use gamepad buttons to move the arm up (Y) and down (A)
-//        if (gamepad1.y)
-//            robot.leftArm.setPower(robot.ARM_UP_POWER);
-//        else if (gamepad1.a)
-//            robot.leftArm.setPower(robot.ARM_DOWN_POWER);
-//        else
-//            robot.leftArm.setPower(0.0);
-
-        // Send telemetry message to signify robot running;
-//        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
-        telemetry.addData("Speed",  "{left, right} = %4.2f %4.2f", (double)speed.get(0), (double)speed.get(1));
+            // Send telemetry message to signify robot running;
+        telemetry.addData("State",  "%3d", stateCnt);
         telemetry.update();
     }
 
@@ -177,7 +248,7 @@ public class Auton_SkyStone extends LinearOpMode {
         vu.targetsSkyStone.deactivate();
     }
 
-    private void trackTarget(VuforiaTrackable target) {
+    private void trackTarget(VuforiaTrackable target, double dist) {
 
         if (((VuforiaTrackableDefaultListener)target.getListener()).isVisible()) {
             vu.setVisible(true);
@@ -186,14 +257,29 @@ public class Auton_SkyStone extends LinearOpMode {
             // the last time that call was made, or if the trackable is not currently visible.
             vu.setTransform(((VuforiaTrackableDefaultListener)target.getListener()).getUpdatedRobotLocation());
 
+            if (vu.getPosLOS() > dist) {
+                // calculate course adjustment if
+                // we are off coarse by 2 inches or 2 degrees
+                speed = lib.calcCorrection(vu.getPosOffset(), vu.getPosAngle(), vu.getYaw());
+                robot.setTrackState(Hardware.TRACK.TRACKING);
+
+            } else {
+                speed = Arrays.asList(0.0, 0.0);
+                robot.setTrackState(Hardware.TRACK.STOPPED);
+            }
+/*
+            robot.setDriveSpeed(speed.get(0), speed.get(1));
+*/
             telemetry.addData("Visible Target", target.getName());
             telemetry.addData("Pos (in)", "{Dist, Offset, Height} = %.1f, %.1f, %.1f", vu.getPosDist(), vu.getPosOffset(), vu.getPosHeight());
             telemetry.addData("Pos (in,deg)", "{LOS, Angle} = %.1f, %.1f", vu.getPosLOS(), vu.getPosAngle());
             telemetry.addData("Rot (deg)", "{Roll, Pitch, Yaw} = %.0f, %.0f, %.0f", vu.getRoll(), vu.getPitch(), vu.getYaw());
+            telemetry.addData("Speed",  "{left, right} = %4.2f %4.2f", robot.getDriveSpeed());
 
         } else {
             vu.setVisible(false);
             vu.setTransform(null);
+            robot.setTrackState(Hardware.TRACK.UNKNOWN);
             telemetry.addData("Visible Target", "none");
         }
     }
