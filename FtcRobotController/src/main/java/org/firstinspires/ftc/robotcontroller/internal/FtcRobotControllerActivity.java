@@ -161,7 +161,7 @@ public class FtcRobotControllerActivity extends Activity
   protected TextView textErrorMessage;
   protected ImmersiveMode immersion;
 
-    protected UpdateUI updateUI;
+  protected UpdateUI updateUI;
   protected Dimmer dimmer;
   protected LinearLayout entireScreenLayout;
 
