@@ -49,15 +49,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Teleop Tank", group="Teleop")
 //@Disabled
-public class TeleopTank_Iterative extends OpMode {
+public class TeleopTank extends OpMode {
 
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
-
-
-    public void TelopTank_Iterative() {
-        msStuckDetectInit = 10000;
-    }
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -70,9 +65,6 @@ public class TeleopTank_Iterative extends OpMode {
         robot.init(hardwareMap);
         telemetry.addData("Hardware", "Init");;
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");
-
         telemetry.update();
     }
 
@@ -81,7 +73,6 @@ public class TeleopTank_Iterative extends OpMode {
      */
     @Override
     public void init_loop() {
-
      }
 
     /*
@@ -121,22 +112,7 @@ public class TeleopTank_Iterative extends OpMode {
             robot.rightServo.setPosition(robot.RIGHT_DN);
         }
 
-
-        // Move both servos to new position.  Assume servos are mirror image of each other.
-//        clawOffset = Range.clip(clawOffset, -0.5, 0.5);
-//      robot.leftClaw.setPosition(robot.MID_SERVO + clawOffset);
-//        robot.rightClaw.setPosition(robot.MID_SERVO - clawOffset);
-
-        // Use gamepad buttons to move the arm up (Y) and down (A)
-//        if (gamepad1.y)
-//            robot.leftArm.setPower(robot.ARM_UP_POWER);
-//        else if (gamepad1.a)
-//            robot.leftArm.setPower(robot.ARM_DOWN_POWER);
-//        else
-//            robot.leftArm.setPower(0.0);
-
         // Send telemetry message to signify robot running;
-//        telemetry.addData("claw",  "Offset = %.2f", clawOffset);
         telemetry.addData("leftDrive",  "%.2f", left);
         telemetry.addData("rightDrive", "%.2f", right);
         telemetry.addData("leftServo",  "%.2f", left);

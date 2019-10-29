@@ -63,10 +63,10 @@ public class Auton_SkyStone extends LinearOpMode {
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
     VuforiaSkyStoneWebcam vu = new VuforiaSkyStoneWebcam();
-    Library lib = new Library();
+    Library lib              = new Library();
 
-    private Hardware.COLOR      allianceColor = Hardware.COLOR.OTHER;
-    private Hardware.POS        startPosition = Hardware.POS.UNKNOWN;
+    private Hardware.COLOR allianceColor = Hardware.COLOR.OTHER;
+    private Hardware.POS   startPosition = Hardware.POS.UNKNOWN;
 
 
     public void runOpMode() {
