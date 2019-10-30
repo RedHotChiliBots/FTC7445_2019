@@ -70,9 +70,6 @@ public class TeleopTank extends OpMode {
         robot.init(hardwareMap);
         telemetry.addData("Hardware", "Init");;
 
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");
-
         telemetry.update();
     }
 
