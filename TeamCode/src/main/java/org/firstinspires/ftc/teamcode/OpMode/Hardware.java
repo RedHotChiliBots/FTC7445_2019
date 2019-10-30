@@ -34,8 +34,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is NOT an opmode.
@@ -80,16 +82,36 @@ public class Hardware {
     public DcMotor leftRearDrive    = null;
     public DcMotor rightRearDrive   = null;
 
-    public Servo leftServo         = null;
-    public Servo rightServo        = null;
+    public Servo leftFoundationServo  = null;
+    public Servo rightFoundationServo = null;
+
+    public DcMotor leftStoneGrabber  = null;
+    public DcMotor rightStoneGrabber = null;
 
     public final double LEFT_UP  = 0.75;
     public final double LEFT_DN  = 0.0;
     public final double RIGHT_UP  = 0.0;
     public final double RIGHT_DN  = 0.75;
 
+    public final double LEFT_IN   = 1.0;
+    public final double LEFT_OUT  = -1.0;
+    public final double RIGHT_IN  = -1.0;
+    public final double RIGHT_OUT = 1.0;
+
+    public enum FDTN {UP, DOWN, OTHER};
     public enum COLOR {RED,BLUE,OTHER}
-    public enum POS {FRONT,BACK,UNKNOWN}
+    public enum TRACK {TRACKING,STOPPED,UNKNOWN}
+
+    private FDTN fntnPosition = FDTN.UP;
+
+    private TRACK trackState = TRACK.UNKNOWN;
+
+    private double leftDrive = 0.0;
+    private double rightDrive = 0.0;
+
+    private double leftStone = 0.0;
+    private double rightStone = 0.0;
+
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -160,12 +182,70 @@ public class Hardware {
         /************** Define and Initialize Servos ***************/
         /***********************************************************/
 
-        leftServo  = hwMap.get(Servo.class, "Left Servo");
-        rightServo = hwMap.get(Servo.class, "Right Servo");
+        leftFoundationServo = hwMap.get(Servo.class, "leftFoundationServo");
+        rightFoundationServo = hwMap.get(Servo.class, "rightFoundationServo");
 
-        leftServo.setPosition(LEFT_UP);
-        rightServo.setPosition(RIGHT_UP);
+        setFoundation((FDTN.UP));
 
+        leftStoneGrabber = hwMap.get(DcMotor.class, "leftStoneGrabber");
+        rightStoneGrabber = hwMap.get(DcMotor.class, "rightStoneGrabber");
+
+        leftStoneGrabber.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rightStoneGrabber.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+
+        leftStoneGrabber.setPower(0);
+        rightStoneGrabber.setPower(0);
+
+        leftStoneGrabber.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightStoneGrabber.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+
+    public void setFoundation(Hardware.FDTN pos) {
+        fntnPosition = pos;
+        if (pos == FDTN.UP) {
+            leftFoundationServo.setPosition(LEFT_UP);
+            rightFoundationServo.setPosition(RIGHT_UP);
+        } else {
+            leftFoundationServo.setPosition(LEFT_DN);
+            rightFoundationServo.setPosition(RIGHT_DN);
+        }
+    }
+
+    public Hardware.FDTN getFoundation() {
+        return fntnPosition;
+    }
+
+    public void setDriveSpeed(double l, double r) {
+        leftDrive = l;
+        rightDrive = r;
+        leftFrontDrive.setPower(l);
+        rightFrontDrive.setPower(r);
+        leftRearDrive.setPower(l);
+        rightRearDrive.setPower(r);
+    }
+
+    public List<Double> getDriveSpeed() {
+        return Arrays.asList(leftDrive, rightDrive);
+    }
+
+    public void setStoneSpeed(double l, double r) {
+        leftStone = l;
+        rightStone = r;
+        leftStoneGrabber.setPower(l);
+        rightStoneGrabber.setPower(r);
+    }
+
+    public List<Double> getStoneSpeed() {
+        return Arrays.asList(leftStone, rightStone);
+    }
+
+    public void setTrackState(TRACK s) {
+        trackState = s;
+    }
+
+    public TRACK getTrackState() {
+        return trackState;
     }
  }
 

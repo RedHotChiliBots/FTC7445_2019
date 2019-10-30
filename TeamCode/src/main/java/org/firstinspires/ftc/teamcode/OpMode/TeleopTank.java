@@ -54,6 +54,11 @@ public class TeleopTank extends OpMode {
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
 
+
+    public void TelopTank_Iterative() {
+        msStuckDetectInit = 10000;
+    }
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -65,6 +70,9 @@ public class TeleopTank extends OpMode {
         robot.init(hardwareMap);
         telemetry.addData("Hardware", "Init");;
 
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Say", "Hello Driver");
+
         telemetry.update();
     }
 
@@ -73,6 +81,7 @@ public class TeleopTank extends OpMode {
      */
     @Override
     public void init_loop() {
+
      }
 
     /*
@@ -88,34 +97,26 @@ public class TeleopTank extends OpMode {
      */
     @Override
     public void loop() {
-        double left;
-        double right;
+
+        Hardware.FDTN posFoundation = Hardware.FDTN.UP;
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
+        robot.setDriveSpeed(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
-        robot.leftFrontDrive.setPower(left);
-        robot.rightFrontDrive.setPower(right);
-        robot.leftRearDrive.setPower(left);
-        robot.rightRearDrive.setPower(right);
-
-
-        // Use gamepad left & right Bumpers to open and close the claw
-        if (gamepad1.right_bumper) {
-            robot.leftServo.setPosition(robot.LEFT_UP);
-            robot.rightServo.setPosition(robot.RIGHT_UP);
+        // Use gamepad #2 left & right Bumpers to raise or lower Foundation Grabber
+        if (gamepad2.left_bumper) {
+            robot.setFoundation(Hardware.FDTN.UP);
+        } else if (gamepad2.right_bumper) {
+            robot.setFoundation(Hardware.FDTN.DOWN);
         }
 
-        if (gamepad1.left_bumper) {
-            robot.leftServo.setPosition(robot.LEFT_DN);
-            robot.rightServo.setPosition(robot.RIGHT_DN);
-        }
+        // Use gamepad #2 triggers to drive Stone Grabber wheels
+        robot.setStoneSpeed(gamepad2.left_trigger, gamepad2.right_trigger);
 
-        // Send telemetry message to signify robot running;
-        telemetry.addData("leftDrive",  "%.2f", left);
-        telemetry.addData("rightDrive", "%.2f", right);
-        telemetry.addData("leftServo",  "%.2f", left);
+
+        telemetry.addData("Speed",  "%5.2f  %5.2f", robot.getDriveSpeed());
+        telemetry.addData("Stone",  "%5.2f  %5.2f", robot.getStoneSpeed());
+        telemetry.addData("Foundation",  "%s", robot.getFoundation());
         telemetry.update();
     }
 
