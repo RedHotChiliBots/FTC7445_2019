@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -49,15 +50,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="Teleop Tank", group="Teleop")
 //@Disabled
-public class TeleOp extends OpMode {
+public class TeleopTank extends OpMode {
 
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
-
-
-    public void TelopTank_Iterative() {
-        msStuckDetectInit = 10000;
-    }
+    ElapsedTime timer   = new ElapsedTime();
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -86,7 +83,7 @@ public class TeleOp extends OpMode {
      */
     @Override
     public void start() {
-
+        timer.reset();
     }
 
     /*
@@ -107,13 +104,33 @@ public class TeleOp extends OpMode {
             robot.setFoundation(Hardware.FDTN.DOWN);
         }
 
+        // Use gamepad #2 left & right Bumpers to raise or lower Foundation Grabber
+        if (gamepad2.a) {
+            robot.setParkArm(Hardware.PARK.UP);
+        } else if (gamepad2.b) {
+            robot.setParkArm(Hardware.PARK.DOWN);
+        }
+
+        if (gamepad2.y) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.setStoneDir(!robot.getStoneDir());
+            }
+        }
+
         // Use gamepad #2 triggers to drive Stone Grabber wheels
         robot.setStoneSpeed(gamepad2.left_trigger, gamepad2.right_trigger);
 
 
-        telemetry.addData("Speed",  "%5.2f  %5.2f", robot.getDriveSpeed());
-        telemetry.addData("Stone",  "%5.2f  %5.2f", robot.getStoneSpeed());
+        telemetry.addData("Speed",  "%5.2f  %5.2f",
+                robot.getDriveSpeed().get(0), robot.getDriveSpeed().get(1));
+        telemetry.addData("Stone",  "%5.2f  %5.2f",
+                robot.getStoneSpeed().get(0), robot.getStoneSpeed().get(1));
         telemetry.addData("Foundation",  "%s", robot.getFoundation());
+        telemetry.addData("Park Arm",  "%s", robot.getParkArm());
+        telemetry.addData("Stone Dir",  "%s", robot.getStoneDir());
+        telemetry.addData("Timer",  "%.4f", timer.time());
+
         telemetry.update();
     }
 

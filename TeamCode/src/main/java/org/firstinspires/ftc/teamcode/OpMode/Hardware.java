@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -85,6 +86,8 @@ public class Hardware {
     public Servo leftFoundationServo  = null;
     public Servo rightFoundationServo = null;
 
+    public Servo parkArmServo = null;
+
     public DcMotor leftStoneGrabber  = null;
     public DcMotor rightStoneGrabber = null;
 
@@ -93,18 +96,25 @@ public class Hardware {
     public final double RIGHT_UP  = 0.0;
     public final double RIGHT_DN  = 0.75;
 
+    public final double PARK_UP  = 0.75;
+    public final double PARK_DN  = 0.0;
+
     public final double LEFT_IN   = 1.0;
     public final double LEFT_OUT  = -1.0;
     public final double RIGHT_IN  = -1.0;
     public final double RIGHT_OUT = 1.0;
 
     public enum FDTN {UP, DOWN, OTHER};
+    public enum PARK {UP, DOWN, OTHER};
     public enum COLOR {RED,BLUE,OTHER}
     public enum TRACK {TRACKING,STOPPED,UNKNOWN}
 
     private FDTN fntnPosition = FDTN.UP;
+    private PARK parkPosition = PARK.UP;
 
     private TRACK trackState = TRACK.UNKNOWN;
+
+    private boolean stoneDir = true;
 
     private double leftDrive = 0.0;
     private double rightDrive = 0.0;
@@ -162,8 +172,8 @@ public class Hardware {
         // Initialize drive motors to correct rotation
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        leftRearDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightRearDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftRearDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        rightRearDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
 
         // Initialize all drive motors to zero power
         leftFrontDrive.setPower(0);
@@ -185,7 +195,11 @@ public class Hardware {
         leftFoundationServo = hwMap.get(Servo.class, "leftFoundationServo");
         rightFoundationServo = hwMap.get(Servo.class, "rightFoundationServo");
 
-        setFoundation((FDTN.UP));
+        setFoundation(FDTN.UP);
+
+        parkArmServo = hwMap.get(Servo.class, "parkArmServo");
+
+        setParkArm(PARK.UP);
 
         leftStoneGrabber = hwMap.get(DcMotor.class, "leftStoneGrabber");
         rightStoneGrabber = hwMap.get(DcMotor.class, "rightStoneGrabber");
@@ -216,6 +230,19 @@ public class Hardware {
         return fntnPosition;
     }
 
+    public void setParkArm(Hardware.PARK pos) {
+        parkPosition = pos;
+        if (pos == PARK.UP) {
+            parkArmServo.setPosition(PARK_UP);
+        } else {
+            parkArmServo.setPosition(PARK_DN);
+        }
+    }
+
+    public Hardware.PARK getParkArm() {
+        return parkPosition;
+    }
+
     public void setDriveSpeed(double l, double r) {
         leftDrive = l;
         rightDrive = r;
@@ -230,14 +257,27 @@ public class Hardware {
     }
 
     public void setStoneSpeed(double l, double r) {
-        leftStone = l;
-        rightStone = r;
-        leftStoneGrabber.setPower(l);
-        rightStoneGrabber.setPower(r);
+        if (stoneDir) {
+            leftStone = l;
+            rightStone = r;
+        } else {
+            leftStone = -l;
+            rightStone = -r;
+        }
+        leftStoneGrabber.setPower(leftStone);
+        rightStoneGrabber.setPower(rightStone);
     }
 
     public List<Double> getStoneSpeed() {
         return Arrays.asList(leftStone, rightStone);
+    }
+
+    public void setStoneDir(boolean d) {
+        stoneDir = !stoneDir;
+    }
+
+    public boolean getStoneDir() {
+        return stoneDir;
     }
 
     public void setTrackState(TRACK s) {
