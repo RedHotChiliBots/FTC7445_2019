@@ -88,6 +88,9 @@ public class Hardware {
 
     public Servo parkArmServo = null;
 
+    public Servo capGuardServo = null;
+    public Servo capReleaseServo = null;
+
     public DcMotor leftStoneGrabber  = null;
     public DcMotor rightStoneGrabber = null;
 
@@ -99,6 +102,11 @@ public class Hardware {
     public final double PARK_UP  = 0.75;
     public final double PARK_DN  = 0.0;
 
+    public final double GUARD_CLOSE  = 0.75;
+    public final double GUARD_OPEN  = 0.0;
+    public final double CAP_STOW  = 0.75;
+    public final double CAP_RELEASE  = 0.0;
+
     public final double LEFT_IN   = 1.0;
     public final double LEFT_OUT  = -1.0;
     public final double RIGHT_IN  = -1.0;
@@ -106,11 +114,13 @@ public class Hardware {
 
     public enum FDTN {UP, DOWN, OTHER};
     public enum PARK {UP, DOWN, OTHER};
+    public enum CAP  {STOW, RELEASE, OTHER};
     public enum COLOR {RED,BLUE,OTHER}
     public enum TRACK {TRACKING,STOPPED,UNKNOWN}
 
     private FDTN fntnPosition = FDTN.UP;
     private PARK parkPosition = PARK.UP;
+    private CAP  capPosition = CAP.STOW;
 
     private TRACK trackState = TRACK.UNKNOWN;
 
@@ -201,6 +211,12 @@ public class Hardware {
 
         setParkArm(PARK.UP);
 
+        capGuardServo = hwMap.get(Servo.class, "capGuardServo");
+        capReleaseServo = hwMap.get(Servo.class, "capReleaseServo");
+
+        setCapGuard(CAP.STOW);
+        setCapRelease(CAP.STOW);
+
         leftStoneGrabber = hwMap.get(DcMotor.class, "leftStoneGrabber");
         rightStoneGrabber = hwMap.get(DcMotor.class, "rightStoneGrabber");
 
@@ -241,6 +257,24 @@ public class Hardware {
 
     public Hardware.PARK getParkArm() {
         return parkPosition;
+    }
+
+     public void setCapGuard(CAP c) {
+        capPosition = c;
+        if (c == CAP.STOW) {
+            capGuardServo.setPosition(GUARD_CLOSE);
+        } else {
+            capGuardServo.setPosition(GUARD_OPEN);
+        }
+     }
+
+    public void setCapRelease(CAP c) {
+        capPosition = c;
+        if (c == CAP.STOW) {
+            capReleaseServo.setPosition(CAP_STOW);
+        } else {
+            capReleaseServo.setPosition(CAP_RELEASE);
+        }
     }
 
     public void setDriveSpeed(double l, double r) {

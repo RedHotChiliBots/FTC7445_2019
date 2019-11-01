@@ -55,6 +55,7 @@ public class TeleopTank extends OpMode {
     /* Declare OpMode members. */
     Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
     ElapsedTime timer   = new ElapsedTime();
+    boolean relCapStone = false;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -115,6 +116,20 @@ public class TeleopTank extends OpMode {
             if (timer.time() > 0.5) {
                 timer.reset();
                 robot.setStoneDir(!robot.getStoneDir());
+            }
+        }
+
+        if (gamepad2.x) {
+            if (timer.time() > 0.5) {
+                relCapStone = true;
+                timer.reset();
+                robot.setCapGuard(Hardware.CAP.RELEASE);
+            }
+        }
+
+        if (relCapStone) {
+            if (timer.time() > 0.25) {
+                robot.setCapRelease(Hardware.CAP.RELEASE);
             }
         }
 
