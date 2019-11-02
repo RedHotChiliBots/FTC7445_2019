@@ -95,17 +95,17 @@ public class Hardware {
     public DcMotor rightStoneGrabber = null;
 
     public final double LEFT_UP  = 0.75;
-    public final double LEFT_DN  = 0.0;
+    public final double LEFT_DN  = 0.25;
     public final double RIGHT_UP  = 0.0;
-    public final double RIGHT_DN  = 0.75;
+    public final double RIGHT_DN  = 0.5;
 
     public final double PARK_UP  = 0.75;
     public final double PARK_DN  = 0.0;
 
-    public final double GUARD_CLOSE  = 0.75;
-    public final double GUARD_OPEN  = 0.0;
-    public final double CAP_STOW  = 0.75;
-    public final double CAP_RELEASE  = 0.0;
+    public final double GUARD_CLOSE  = 0.25;
+    public final double GUARD_OPEN  = 0.75;
+    public final double CAP_STOW  = 0.0;
+    public final double CAP_RELEASE  = 0.75;
 
     public final double LEFT_IN   = 1.0;
     public final double LEFT_OUT  = -1.0;
@@ -125,6 +125,7 @@ public class Hardware {
     private TRACK trackState = TRACK.UNKNOWN;
 
     private boolean stoneDir = true;
+    private boolean driveDir = true;
 
     private double leftDrive = 0.0;
     private double rightDrive = 0.0;
@@ -280,10 +281,17 @@ public class Hardware {
     public void setDriveSpeed(double l, double r) {
         leftDrive = l;
         rightDrive = r;
-        leftFrontDrive.setPower(l);
-        rightFrontDrive.setPower(r);
-        leftRearDrive.setPower(l);
-        rightRearDrive.setPower(r);
+        if (driveDir) {
+            leftFrontDrive.setPower(l);
+            rightFrontDrive.setPower(r);
+            leftRearDrive.setPower(l);
+            rightRearDrive.setPower(r);
+        } else {
+            leftFrontDrive.setPower(-r);
+            rightFrontDrive.setPower(-l);
+            leftRearDrive.setPower(-r);
+            rightRearDrive.setPower(-l);
+        }
     }
 
     public List<Double> getDriveSpeed() {
@@ -304,6 +312,14 @@ public class Hardware {
 
     public List<Double> getStoneSpeed() {
         return Arrays.asList(leftStone, rightStone);
+    }
+
+    public void setDriveDir(boolean d) {
+        driveDir = !driveDir;
+    }
+
+    public boolean getDriveDir() {
+        return driveDir;
     }
 
     public void setStoneDir(boolean d) {
