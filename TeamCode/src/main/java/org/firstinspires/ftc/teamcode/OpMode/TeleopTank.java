@@ -76,7 +76,6 @@ public class TeleopTank extends OpMode {
      */
     @Override
     public void init_loop() {
-
      }
 
     /*
