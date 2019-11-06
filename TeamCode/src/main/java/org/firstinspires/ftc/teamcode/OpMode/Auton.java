@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.OpMode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,7 +57,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Auton SkyStone", group="Auton")
+@Autonomous(name="Auton SkyStone", group="Auton")
 //@Disabled
 public class Auton extends LinearOpMode {
 
@@ -381,7 +382,7 @@ public class Auton extends LinearOpMode {
             telemetry.addData("Pos (in)", "{Dist, Offset, Height} = %.1f, %.1f, %.1f", vu.getPosDist(), vu.getPosOffset(), vu.getPosHeight());
             telemetry.addData("Pos (in,deg)", "{LOS, Angle} = %.1f, %.1f", vu.getPosLOS(), vu.getPosAngle());
             telemetry.addData("Rot (deg)", "{Roll, Pitch, Yaw} = %.0f, %.0f, %.0f", vu.getRoll(), vu.getPitch(), vu.getYaw());
-            telemetry.addData("Speed",  "{left, right} = %4.2f %4.2f", robot.getDriveSpeed());
+            telemetry.addData("Speed",  "{left, right} = %4.2f %4.2f", robot.getDriveSpeed().get(0), robot.getDriveSpeed().get(1));
 
         } else {
             vu.setVisible(false);
