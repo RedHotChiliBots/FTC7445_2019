@@ -102,8 +102,8 @@ public class Hardware {
     public final double PARK_UP  = 0.75;
     public final double PARK_DN  = 0.0;
 
-    public final double GUARD_CLOSE  = 0.25;
-    public final double GUARD_OPEN  = 0.75;
+    public final double GUARD_CLOSE  = 1.0;
+    public final double GUARD_OPEN  = 0.5;
     public final double CAP_STOW  = 0.0;
     public final double CAP_RELEASE  = 0.75;
 
