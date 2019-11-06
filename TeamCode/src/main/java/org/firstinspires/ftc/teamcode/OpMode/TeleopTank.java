@@ -111,11 +111,23 @@ public class TeleopTank extends OpMode {
             robot.setParkArm(Hardware.PARK.DOWN);
         }
 
+        if (gamepad1.y) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.setDriveDir(!robot.getDriveDir());
+            }
+        }
+
         if (gamepad2.y) {
             if (timer.time() > 0.5) {
                 timer.reset();
                 robot.setStoneDir(!robot.getStoneDir());
             }
+        }
+
+        if (gamepad1.x) {
+            robot.setCapRelease(Hardware.CAP.STOW);
+            robot.setCapGuard(Hardware.CAP.STOW);
         }
 
         if (gamepad2.x) {
@@ -127,7 +139,7 @@ public class TeleopTank extends OpMode {
         }
 
         if (relCapStone) {
-            if (timer.time() > 0.25) {
+            if (timer.time() > 1.0) {
                 robot.setCapRelease(Hardware.CAP.RELEASE);
             }
         }
