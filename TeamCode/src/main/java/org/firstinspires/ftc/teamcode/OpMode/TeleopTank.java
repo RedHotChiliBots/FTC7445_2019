@@ -126,10 +126,6 @@ public class TeleopTank extends OpMode {
             }
         }
 
-        if (gamepad1.x) {
-            robot.setCapRelease(Hardware.CAP.STOW);
-            robot.setCapGuard(Hardware.CAP.STOW);
-        }
 
         if (gamepad2.x) {
             if (timer.time() > 0.5) {
