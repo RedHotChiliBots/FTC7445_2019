@@ -97,13 +97,14 @@ public class TeleopTank extends OpMode {
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         robot.setDriveSpeed(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
-
-        if (gamepad1.x) {
-            robot.setCapRelease(Hardware.CAP.STOW);
-            robot.setCapGuard(Hardware.CAP.STOW);
+        if (gamepad1.y) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.setDriveDir(!robot.getDriveDir());
+            }
         }
 
-        if (gamepad1.y) {
+        if (gamepad1.x) {
             if (timer.time() > 0.5) {
                 timer.reset();
                 robot.setDriveHalfSpeed(!robot.getDriveHalfSpeed());
@@ -122,13 +123,6 @@ public class TeleopTank extends OpMode {
             robot.setParkArm(Hardware.PARK.UP);
         } else if (gamepad2.b) {
             robot.setParkArm(Hardware.PARK.DOWN);
-        }
-
-        if (gamepad1.y) {
-            if (timer.time() > 0.5) {
-                timer.reset();
-                robot.setDriveDir(!robot.getDriveDir());
-            }
         }
 
         if (gamepad2.y) {
@@ -150,6 +144,11 @@ public class TeleopTank extends OpMode {
             if (timer.time() > 0.25) {
                 robot.setCapRelease(Hardware.CAP.RELEASE);
             }
+        }
+
+        if (gamepad2.back) {
+            robot.setCapRelease(Hardware.CAP.STOW);
+            robot.setCapGuard(Hardware.CAP.STOW);
         }
 
         // Use gamepad #2 triggers to drive Stone Grabber wheels
