@@ -143,6 +143,7 @@ public class TeleopTank extends OpMode {
         if (relCapStone) {
             if (timer.time() > 0.25) {
                 robot.setCapRelease(Hardware.CAP.RELEASE);
+                relCapStone = false;
             }
         }
 

@@ -116,15 +116,15 @@ public class Auton extends LinearOpMode {
 
         if (allianceColor == Hardware.COLOR.RED) {
             frontWallTgt = vu.rear2;
-            rearWallTgt = vu.front2;
+            rearWallTgt = vu.front1;
             sideWallTgt = vu.blue2;
-            turnSpeed = 0.5;
+            turnSpeed = 0.25;
 
         } else {
             frontWallTgt = vu.rear1;
-            rearWallTgt = vu.front1;
+            rearWallTgt = vu.front2;
             sideWallTgt = vu.red1;
-            turnSpeed = -0.5;
+            turnSpeed = -0.25;
         }
         parkWallTgt = rearWallTgt;
 
