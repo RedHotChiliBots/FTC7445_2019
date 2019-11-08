@@ -126,6 +126,7 @@ public class Hardware {
 
     private boolean stoneDir = true;
     private boolean driveDir = true;
+    private boolean driveHalfSpeed = false;
 
     private double leftDrive = 0.0;
     private double rightDrive = 0.0;
@@ -162,7 +163,7 @@ public class Hardware {
         int cameraMonitorViewId = ahwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", ahwMap.appContext.getPackageName());
         parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
@@ -279,6 +280,10 @@ public class Hardware {
     }
 
     public void setDriveSpeed(double l, double r) {
+        if (driveHalfSpeed) {
+            l /= 2.0;
+            r /= 2.0;
+        }
         leftDrive = l;
         rightDrive = r;
         if (driveDir) {
@@ -296,6 +301,14 @@ public class Hardware {
 
     public List<Double> getDriveSpeed() {
         return Arrays.asList(leftDrive, rightDrive);
+    }
+
+    public void setDriveHalfSpeed(boolean h) {
+        driveHalfSpeed = h;
+    }
+
+    public boolean getDriveHalfSpeed() {
+        return driveHalfSpeed;
     }
 
     public void setStoneSpeed(double l, double r) {

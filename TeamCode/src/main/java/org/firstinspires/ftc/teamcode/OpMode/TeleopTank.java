@@ -76,7 +76,6 @@ public class TeleopTank extends OpMode {
      */
     @Override
     public void init_loop() {
-
      }
 
     /*
@@ -98,6 +97,20 @@ public class TeleopTank extends OpMode {
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         robot.setDriveSpeed(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
 
+        if (gamepad1.y) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.setDriveDir(!robot.getDriveDir());
+            }
+        }
+
+        if (gamepad1.x) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.setDriveHalfSpeed(!robot.getDriveHalfSpeed());
+            }
+        }
+
         // Use gamepad #2 left & right Bumpers to raise or lower Foundation Grabber
         if (gamepad2.left_bumper) {
             robot.setFoundation(Hardware.FDTN.UP);
@@ -112,20 +125,12 @@ public class TeleopTank extends OpMode {
             robot.setParkArm(Hardware.PARK.DOWN);
         }
 
-        if (gamepad1.y) {
-            if (timer.time() > 0.5) {
-                timer.reset();
-                robot.setDriveDir(!robot.getDriveDir());
-            }
-        }
-
         if (gamepad2.y) {
             if (timer.time() > 0.5) {
                 timer.reset();
                 robot.setStoneDir(!robot.getStoneDir());
             }
         }
-
 
         if (gamepad2.x) {
             if (timer.time() > 0.5) {
@@ -138,7 +143,13 @@ public class TeleopTank extends OpMode {
         if (relCapStone) {
             if (timer.time() > 0.25) {
                 robot.setCapRelease(Hardware.CAP.RELEASE);
+                relCapStone = false;
             }
+        }
+
+        if (gamepad2.back) {
+            robot.setCapRelease(Hardware.CAP.STOW);
+            robot.setCapGuard(Hardware.CAP.STOW);
         }
 
         // Use gamepad #2 triggers to drive Stone Grabber wheels
