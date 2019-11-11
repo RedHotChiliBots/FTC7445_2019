@@ -328,7 +328,7 @@ public class Hardware {
     }
 
     public void setDriveDir(boolean d) {
-        driveDir = !driveDir;
+        driveDir = d;
     }
 
     public boolean getDriveDir() {
