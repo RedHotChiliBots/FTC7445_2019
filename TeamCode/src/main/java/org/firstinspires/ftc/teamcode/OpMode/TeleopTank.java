@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -53,7 +52,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TeleopTank extends OpMode {
 
     /* Declare OpMode members. */
-    Hardware robot           = new Hardware(); // use the class created to define a Pushbot's hardware
+    Hardware robot      = new Hardware(); // use the class created to define a Pushbot's hardware
     ElapsedTime timer   = new ElapsedTime();
     boolean relCapStone = false;
 
@@ -92,46 +91,54 @@ public class TeleopTank extends OpMode {
     @Override
     public void loop() {
 
-        Hardware.FDTN posFoundation = Hardware.FDTN.UP;
-
-        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        robot.setDriveSpeed(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
-
-        if (gamepad1.y) {
-            if (timer.time() > 0.5) {
-                timer.reset();
-                robot.setDriveDir(!robot.getDriveDir());
-            }
-        }
-
+        // Toggle Robot Half Speed with debounce
         if (gamepad1.x) {
             if (timer.time() > 0.5) {
                 timer.reset();
-                robot.setDriveHalfSpeed(!robot.getDriveHalfSpeed());
+                robot.toggleHalfSpeed();
             }
         }
 
-        // Use gamepad #2 left & right Bumpers to raise or lower Foundation Grabber
+        // Toggle Robot Direction with debounce
+        if (gamepad1.y) {
+            if (timer.time() > 0.5) {
+                timer.reset();
+                robot.toggleDriveDir();
+            }
+        }
+
+        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
+        robot.setDriveSpeed(-gamepad1.left_stick_y, -gamepad1.right_stick_y);
+//        robot.setDriveMecanum(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+
+        // Raise or Lower Foundation Grabbers
         if (gamepad2.left_bumper) {
             robot.setFoundation(Hardware.FDTN.UP);
         } else if (gamepad2.right_bumper) {
             robot.setFoundation(Hardware.FDTN.DOWN);
         }
 
-        // Use gamepad #2 left & right Bumpers to raise or lower Foundation Grabber
+        // Raise or Lower Park Arm
         if (gamepad2.a) {
             robot.setParkArm(Hardware.PARK.UP);
         } else if (gamepad2.b) {
             robot.setParkArm(Hardware.PARK.DOWN);
         }
 
+        /***********     Control Stone   ************/
+        /*   Toggle stone direction with debounce   */
         if (gamepad2.y) {
             if (timer.time() > 0.5) {
                 timer.reset();
-                robot.setStoneDir(!robot.getStoneDir());
+                robot.toggleStoneDir();
             }
         }
 
+        /*   Run Stone Wheels to pull or push Stone */
+        robot.setStoneSpeed(gamepad2.left_trigger, gamepad2.right_trigger);
+
+        /***********  Release Cap Stone  ************/
+        /*   Raise Guard  with debounce             */
         if (gamepad2.x) {
             if (timer.time() > 0.5) {
                 relCapStone = true;
@@ -140,6 +147,7 @@ public class TeleopTank extends OpMode {
             }
         }
 
+        /*   Deploy Cap Stone after delay           */
         if (relCapStone) {
             if (timer.time() > 0.25) {
                 robot.setCapRelease(Hardware.CAP.RELEASE);
@@ -147,23 +155,22 @@ public class TeleopTank extends OpMode {
             }
         }
 
+        /***********  Re-Stow Cap Stone  ************/
         if (gamepad2.back) {
             robot.setCapRelease(Hardware.CAP.STOW);
             robot.setCapGuard(Hardware.CAP.STOW);
         }
 
-        // Use gamepad #2 triggers to drive Stone Grabber wheels
-        robot.setStoneSpeed(gamepad2.left_trigger, gamepad2.right_trigger);
 
+        /***********  Update Telemetry  *************/
+        telemetry.addData("Drive",  "%s  $s  %5.2f  %5.2f",
+                robot.getDriveDir(), robot.getDriveHalfSpeed(),robot.getDriveSpeed().get(0), robot.getDriveSpeed().get(1));
 
-        telemetry.addData("Speed",  "%5.2f  %5.2f",
-                robot.getDriveSpeed().get(0), robot.getDriveSpeed().get(1));
-        telemetry.addData("Stone",  "%5.2f  %5.2f",
-                robot.getStoneSpeed().get(0), robot.getStoneSpeed().get(1));
+        telemetry.addData("Stone",  "%s  %5.2f  %5.2f",
+                robot.getStoneDir(), robot.getStoneSpeed().get(0), robot.getStoneSpeed().get(1));
+
         telemetry.addData("Foundation",  "%s", robot.getFoundation());
         telemetry.addData("Park Arm",  "%s", robot.getParkArm());
-        telemetry.addData("Stone Dir",  "%s", robot.getStoneDir());
-        telemetry.addData("Timer",  "%.4f", timer.time());
 
         telemetry.update();
     }

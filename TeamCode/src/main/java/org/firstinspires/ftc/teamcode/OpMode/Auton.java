@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -358,7 +357,7 @@ public class Auton extends LinearOpMode {
 
     private void trackTarget(VuforiaTrackable target, double dist) {
 
-        if (((VuforiaTrackableDefaultListener)target.getListener()).isVisible()) {
+         if (((VuforiaTrackableDefaultListener)target.getListener()).isVisible()) {
             vu.setVisible(true);
 
             // getUpdatedRobotLocation() will return null if no new information is available since

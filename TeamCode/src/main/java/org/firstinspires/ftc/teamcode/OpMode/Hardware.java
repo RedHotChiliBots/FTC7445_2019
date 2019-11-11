@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -73,48 +72,51 @@ public class Hardware {
     private static final String VUFORIA_KEY =
             "AQvZgMD/////AAABmZquHHM/akuGkmTcIcssi+gINVzua6tbuI6iq9wY3ypvUkndXoRQncprZtLgjoNzaAZx4jTucekE90oZj0G/CqgXL1uzhrV4+knSziKUwgFVy3SVvGzw0+/ZqHVFwAFe6wsty2B2Mxg+uIoAFq7tB5WRB6GMx1j47m9q7+hkx3+KOKasSiO/T8Fd/nehQkRVBwB1XJNEo28R0yicJfdGkhxgJOK/CGTkN49MooMjaSx1PFpgx2Bx8wxJwNMcOxzh3zYeiwddMZvsycSf3h2WTDHBHeFkW+f00i0071LJRaawELtRmIxP/pmV2Squ/1daGYjLGKveSPH5tBIHiQvGwdAnv3QrRZnhEf6ztG9eELEs";
 
-    public VuforiaLocalizer.Parameters parameters;
+    VuforiaLocalizer.Parameters parameters;
 //    private WebcamName webcamName = null;
 
 
     /* Public OpMode members. */
-    public DcMotor leftFrontDrive   = null;
-    public DcMotor rightFrontDrive  = null;
-    public DcMotor leftRearDrive    = null;
-    public DcMotor rightRearDrive   = null;
+    private DcMotor leftFrontDrive   = null;
+    private DcMotor rightFrontDrive  = null;
+    private DcMotor leftRearDrive    = null;
+    private DcMotor rightRearDrive   = null;
 
-    public Servo leftFoundationServo  = null;
-    public Servo rightFoundationServo = null;
+    private Servo leftFoundationServo  = null;
+    private Servo rightFoundationServo = null;
 
-    public Servo parkArmServo = null;
+    private Servo parkArmServo = null;
 
-    public Servo capGuardServo = null;
-    public Servo capReleaseServo = null;
+    private Servo capGuardServo = null;
+    private Servo capReleaseServo = null;
 
-    public DcMotor leftStoneGrabber  = null;
-    public DcMotor rightStoneGrabber = null;
+    private DcMotor leftStoneGrabber  = null;
+    private DcMotor rightStoneGrabber = null;
 
-    public final double LEFT_UP  = 0.75;
-    public final double LEFT_DN  = 0.25;
-    public final double RIGHT_UP  = 0.0;
-    public final double RIGHT_DN  = 0.5;
+    private final double LEFT_UP  = 0.75;
+    private final double LEFT_DN  = 0.25;
+    private final double RIGHT_UP  = 0.0;
+    private final double RIGHT_DN  = 0.5;
 
-    public final double PARK_UP  = 0.75;
-    public final double PARK_DN  = 0.0;
+    private final double PARK_UP  = 0.75;
+    private final double PARK_DN  = 0.0;
 
-    public final double GUARD_CLOSE  = 1.0;
-    public final double GUARD_OPEN  = 0.5;
-    public final double CAP_STOW  = 0.0;
-    public final double CAP_RELEASE  = 0.75;
+    private final double GUARD_CLOSE  = 1.0;
+    private final double GUARD_OPEN  = 0.5;
+    private final double CAP_STOW  = 0.0;
+    private final double CAP_RELEASE  = 0.75;
 
     public final double LEFT_IN   = 1.0;
     public final double LEFT_OUT  = -1.0;
     public final double RIGHT_IN  = -1.0;
     public final double RIGHT_OUT = 1.0;
 
-    public enum FDTN {UP, DOWN, OTHER};
-    public enum PARK {UP, DOWN, OTHER};
-    public enum CAP  {STOW, RELEASE, OTHER};
+    public enum DDIR {FORWARD, REVERSE}
+    public enum DHALF {FULL, HALF}
+    public enum SDIR {IN, OUT}
+    public enum FDTN {UP, DOWN, OTHER}
+    public enum PARK {UP, DOWN, OTHER}
+    public enum CAP  {STOW, RELEASE, OTHER}
     public enum COLOR {RED,BLUE,OTHER}
     public enum TRACK {TRACKING,STOPPED,UNKNOWN}
 
@@ -124,9 +126,9 @@ public class Hardware {
 
     private TRACK trackState = TRACK.UNKNOWN;
 
-    private boolean stoneDir = true;
-    private boolean driveDir = true;
-    private boolean driveHalfSpeed = false;
+    private SDIR stoneDir = SDIR.IN;
+    private DDIR driveDir = DDIR.FORWARD;
+    private DHALF driveHalfSpeed = DHALF.FULL;
 
     private double leftDrive = 0.0;
     private double rightDrive = 0.0;
@@ -136,7 +138,7 @@ public class Hardware {
 
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
+    private HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
@@ -145,13 +147,13 @@ public class Hardware {
     }
 
     /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap ahwMap) {
+    void init(HardwareMap ahwMap) {
         // Save reference to Hardware map
         hwMap = ahwMap;
 
-        /***************************************************************/
-        /*********** Define and Initialize Vuforia & Camera ************/
-        /***************************************************************/
+        //***************************************************************/
+        //*********** Define and Initialize Vuforia & Camera ************/
+        //***************************************************************/
 
 //        webcamName = ahwMap.get(WebcamName.class, "Webcam 1");
 
@@ -167,14 +169,13 @@ public class Hardware {
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
 
-        /**
-         * We also indicate which camera on the RC we wish to use.
-         */
+
+         //* We also indicate which camera on the RC we wish to use.
 //        parameters.cameraName = webcamName;
 
-        /***********************************************************/
-        /*********** Define and Initialize Drive Motors ************/
-        /***********************************************************/
+        //***********************************************************/
+        //*********** Define and Initialize Drive Motors ************/
+        //***********************************************************/
         // Define each drive motor
         leftFrontDrive = hwMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
@@ -200,9 +201,9 @@ public class Hardware {
         leftRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightRearDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        /***********************************************************/
-        /************** Define and Initialize Servos ***************/
-        /***********************************************************/
+        //***********************************************************/
+        //************** Define and Initialize Servos ***************/
+        //***********************************************************/
 
         leftFoundationServo = hwMap.get(Servo.class, "leftFoundationServo");
         rightFoundationServo = hwMap.get(Servo.class, "rightFoundationServo");
@@ -233,7 +234,7 @@ public class Hardware {
     }
 
 
-    public void setFoundation(Hardware.FDTN pos) {
+    void setFoundation(Hardware.FDTN pos) {
         fntnPosition = pos;
         if (pos == FDTN.UP) {
             leftFoundationServo.setPosition(LEFT_UP);
@@ -244,11 +245,11 @@ public class Hardware {
         }
     }
 
-    public Hardware.FDTN getFoundation() {
+    Hardware.FDTN getFoundation() {
         return fntnPosition;
     }
 
-    public void setParkArm(Hardware.PARK pos) {
+    void setParkArm(Hardware.PARK pos) {
         parkPosition = pos;
         if (pos == PARK.UP) {
             parkArmServo.setPosition(PARK_UP);
@@ -257,11 +258,11 @@ public class Hardware {
         }
     }
 
-    public Hardware.PARK getParkArm() {
+    Hardware.PARK getParkArm() {
         return parkPosition;
     }
 
-     public void setCapGuard(CAP c) {
+     void setCapGuard(CAP c) {
         capPosition = c;
         if (c == CAP.STOW) {
             capGuardServo.setPosition(GUARD_CLOSE);
@@ -270,7 +271,7 @@ public class Hardware {
         }
      }
 
-    public void setCapRelease(CAP c) {
+    void setCapRelease(CAP c) {
         capPosition = c;
         if (c == CAP.STOW) {
             capReleaseServo.setPosition(CAP_STOW);
@@ -279,14 +280,14 @@ public class Hardware {
         }
     }
 
-    public void setDriveSpeed(double l, double r) {
-        if (driveHalfSpeed) {
+    void setDriveSpeed(double l, double r) {
+        if (driveHalfSpeed == DHALF.HALF) {
             l /= 2.0;
             r /= 2.0;
         }
         leftDrive = l;
         rightDrive = r;
-        if (driveDir) {
+        if (driveDir == DDIR.FORWARD) {
             leftFrontDrive.setPower(l);
             rightFrontDrive.setPower(r);
             leftRearDrive.setPower(l);
@@ -299,20 +300,57 @@ public class Hardware {
         }
     }
 
-    public List<Double> getDriveSpeed() {
+    List<Double> getDriveSpeed() {
         return Arrays.asList(leftDrive, rightDrive);
     }
 
-    public void setDriveHalfSpeed(boolean h) {
+    void setDriveMecanum(double lx, double ly, double rx) {
+        double magnitude = Math.hypot(lx, ly);
+        double robotAngle = Math.atan2(ly, lx) + Math.PI / 4;
+        double fld = magnitude * Math.cos(robotAngle) + rx;
+        double frd = magnitude * Math.sin(robotAngle) - rx;
+        double bld = magnitude * Math.sin(robotAngle) + rx;
+        double brd = magnitude * Math.cos(robotAngle) - rx;
+        leftFrontDrive.setPower(fld);
+        rightFrontDrive.setPower(frd);
+        leftRearDrive.setPower(bld);
+        rightRearDrive.setPower(brd);
+    }
+
+    void setDriveHalfSpeed(DHALF h) {
         driveHalfSpeed = h;
     }
 
-    public boolean getDriveHalfSpeed() {
+    void toggleHalfSpeed() {
+        if (driveHalfSpeed == DHALF.FULL) {
+            driveHalfSpeed = DHALF.HALF;
+        } else {
+            driveHalfSpeed = DHALF.FULL;
+        }
+    }
+
+    DHALF getDriveHalfSpeed() {
         return driveHalfSpeed;
     }
 
-    public void setStoneSpeed(double l, double r) {
-        if (stoneDir) {
+    void setDriveDir(DDIR d) {
+        driveDir = d;
+    }
+
+    void toggleDriveDir() {
+        if (driveDir == DDIR.FORWARD) {
+            driveDir = DDIR.REVERSE;
+        } else {
+            driveDir = DDIR.FORWARD;
+        }
+    }
+
+    DDIR getDriveDir() {
+        return driveDir;
+    }
+
+    void setStoneSpeed(double l, double r) {
+        if (stoneDir == SDIR.IN) {
             leftStone = l;
             rightStone = r;
         } else {
@@ -323,31 +361,31 @@ public class Hardware {
         rightStoneGrabber.setPower(rightStone);
     }
 
-    public List<Double> getStoneSpeed() {
+    List<Double> getStoneSpeed() {
         return Arrays.asList(leftStone, rightStone);
     }
 
-    public void setDriveDir(boolean d) {
-        driveDir = !driveDir;
+    void setStoneDir(SDIR d) {
+        stoneDir = d;
     }
 
-    public boolean getDriveDir() {
-        return driveDir;
+    void toggleStoneDir() {
+        if (stoneDir == SDIR.IN) {
+            stoneDir = SDIR.OUT;
+        } else {
+            stoneDir = SDIR.IN;
+        }
     }
 
-    public void setStoneDir(boolean d) {
-        stoneDir = !stoneDir;
-    }
-
-    public boolean getStoneDir() {
+    SDIR getStoneDir() {
         return stoneDir;
     }
 
-    public void setTrackState(TRACK s) {
+    void setTrackState(TRACK s) {
         trackState = s;
     }
 
-    public TRACK getTrackState() {
+    TRACK getTrackState() {
         return trackState;
     }
  }
