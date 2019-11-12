@@ -77,10 +77,10 @@ public class Hardware {
 
 
     /* Public OpMode members. */
-    private DcMotor leftFrontDrive   = null;
-    private DcMotor rightFrontDrive  = null;
-    private DcMotor leftRearDrive    = null;
-    private DcMotor rightRearDrive   = null;
+    public DcMotor leftFrontDrive   = null;
+    public DcMotor rightFrontDrive  = null;
+    public DcMotor leftRearDrive    = null;
+    public DcMotor rightRearDrive   = null;
 
     private Servo leftFoundationServo  = null;
     private Servo rightFoundationServo = null;

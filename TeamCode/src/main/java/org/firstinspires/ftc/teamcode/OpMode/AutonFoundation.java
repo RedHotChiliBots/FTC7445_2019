@@ -181,20 +181,19 @@ public class AutonFoundation extends LinearOpMode {
                 }
                 break;
 
-            case 4:
+            case 4: // Control Foundation
                 timer.reset();
                 robot.setFoundation(Hardware.FDTN.DOWN);
                 stateCnt++;
                 break;
 
-            case 5:
+            case 5: // Pause x seconds for servp
                 if (timer.time() > 0.5) {
-                    robot.setDriveSpeed(0.0,0.0);
                     stateCnt++;
                 }
                 break;
 
-            case 6: // Start driving
+            case 6: // Drive reverse with Foundation
                 timer.reset();
                 robot.setDriveSpeed(-0.6, -0.6);
                 stateCnt++;
@@ -207,7 +206,7 @@ public class AutonFoundation extends LinearOpMode {
                 }
                 break;
 
-            case 8: // Start driving
+            case 8: // Rotate with Foundation
                 timer.reset();
                 robot.setDriveSpeed(-0.6, 0.6);
                 stateCnt++;
@@ -219,6 +218,7 @@ public class AutonFoundation extends LinearOpMode {
                     stateCnt++;
                 }
                 break;
+
             default:
                 stateCnt++;
         }
